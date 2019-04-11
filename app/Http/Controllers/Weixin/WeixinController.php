@@ -9,7 +9,7 @@ class WeixinController extends Controller
 {
     //
     public function weixin(){
-        echo $GET['echostr']; 
+        echo $_GET['echostr']; 
     }
     // public function weixin(){
     //     echo $GET['echostr']; 
