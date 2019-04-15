@@ -17,4 +17,8 @@ Route::get('/', function () {
 
 
 
-Route::get('weixin',"Weixin\WeixinController@weixin");
+Route::get('/weixin/valid',"Weixin\WeixinController@valid");
+Route::post('/weixin/valid',"Weixin\WeixinController@wxEvent");
+
+
+Route::get('/weixin/getAccessToken',"Weixin\WeixinController@getAccessToken");
