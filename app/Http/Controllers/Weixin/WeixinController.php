@@ -11,14 +11,14 @@ class WeixinController extends Controller
 {
     //处理首次接入get请求
     public function valid(){
-        echo $_GET['echostr']; die;
+        echo $_GET['echostr'];
     }
     public function atoken(){
         echo $this->getAccessToken();
     }
     // 接入微信事件推送POST
     public function wxEvent(){
-        echo $_GET['echostr']; die;
+        echo $_GET['echostr'];
         // 接收服务器推送
         $content=file_get_contents("php://input");
         $time=date("Y-m-d H:i:s");
