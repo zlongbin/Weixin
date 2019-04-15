@@ -18,7 +18,6 @@ class WeixinController extends Controller
     }
     // 接入微信事件推送POST
     public function wxEvent(){
-        echo $_GET['echostr'];
         // 接收服务器推送
         $content=file_get_contents("php://input");
         $time=date("Y-m-d H:i:s");
@@ -50,6 +49,7 @@ class WeixinController extends Controller
                     'sex'=>$user['sex'],
                     'headimgurl'=>$user['headimgurl']
                 ];
+                $id = WxUserModel::insertGetId($user_Info);
                 echo '<xml>
                 <ToUserName><![CDATA['.$openid.']]></ToUserName>
                 <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
