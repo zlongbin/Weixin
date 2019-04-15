@@ -11,7 +11,7 @@ class WeixinController extends Controller
 {
     //处理首次接入get请求
     public function valid(){
-        echo $_GET['echostr']; 
+        echo $_GET['echostr']; die;
     }
     public function atoken(){
         echo $this->getAccessToken();
