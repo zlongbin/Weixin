@@ -39,7 +39,12 @@ class WeixinController extends Controller
             // 根据openid判断用户是否存在
             $local_user = WxUserModel::where(['openid'=>$openid])->first();
             if($local_user){
-                echo '<xml><ToUserName><![CDATA['.$openid.']]></ToUserName><FromUserName><![CDATA['.$wx_id.']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['. '欢迎回来 '. $local_user['nickname'] .']]></Content></xml>';
+                echo '<xml>
+                <ToUserName><![CDATA['.$openid.']]></ToUserName>
+                <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
+                <CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType>
+                <Content><![CDATA['. '欢迎回来 '. $local_user['nickname'] .']]></Content>
+                </xml>';
             }else{
                 // 获取用户信息
                 $user =$this->getUserInfo($openid);
@@ -57,8 +62,7 @@ class WeixinController extends Controller
                 <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
                 <CreateTime>'.time().'</CreateTime>
                 <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA['. '欢迎关注 '. $user['nickname'] .']]>
-                </Content>
+                <Content><![CDATA['. '欢迎关注 '. $user['nickname'] .']]></Content>
                 </xml>';
             }
         }elseif($msg_type=='text'){
@@ -79,8 +83,7 @@ class WeixinController extends Controller
                 <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
                 <CreateTime>'.time().'</CreateTime>
                 <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA['.$str.']]>
-                </Content>
+                <Content><![CDATA['.$str.']]></Content>
                 </xml>';
             }else{
                 $response_xml='<xml>
@@ -88,8 +91,7 @@ class WeixinController extends Controller
                 <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
                 <CreateTime>'.time().'</CreateTime>
                 <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA[城市名不正确]]>
-                </Content>
+                <Content><![CDATA["城市名不正确"]]></Content>
                 </xml>';
             }
             return $response_xml;
@@ -121,10 +123,4 @@ class WeixinController extends Controller
         $user = json_decode($data,true);
         return $user;
     }
-    public function s(){
-        // https://free-api.heweather.net/s6/weather/now?location=北京&key=HE1904161042411866
-    
-    }
 }
-
-// 3.1415926535897932384626
