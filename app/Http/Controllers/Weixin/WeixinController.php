@@ -153,6 +153,6 @@ class WeixinController extends Controller
         $client = new Client;
         $response = $client->request("post",$url,['body' => $data]);
 
-        echo $response -> getBody();
+        return  $response -> getBody();
     }
 }
