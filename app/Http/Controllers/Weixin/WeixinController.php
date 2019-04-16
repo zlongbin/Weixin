@@ -135,13 +135,14 @@ class WeixinController extends Controller
         $user_Info = WxUserModel::all()->toArray();
         // echo "<pre>";print_r($user_Info);echo "</pre>";
         $openid_arr = array_column($user_Info,'openid');
-        // echo "<pre>";print_r($openid_arr);echo "</pre>";
+        echo "<pre>";print_r($openid_arr);echo "</pre>";
         $content = "Nice 兄dei";
         $response = $this->sendMsg($openid_arr,$content);
         echo $response;
     }
     // 群发消息
     public function sendMsg($openid_arr,$content){
+        // echo $this->getAccessToken();die;
         $msg = [
             "touser" => $openid_arr,
             "msgtype" => "text",
