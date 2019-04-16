@@ -125,4 +125,34 @@ class WeixinController extends Controller
         $user = json_decode($data,true);
         return $user;
     }
+    // 创建自定义菜单
+    public function createMenu(){
+        $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$this->getAccessToken();
+
+    }
+    // 群发消息
+    public function send(){
+        $user_Info = WxUserModel::all()->toArray();
+        // echo "<pre>";print_r($user_Info);echo "</pre>";
+        $openid_arr = array_column($user_Info,'openid');
+        // echo "<pre>";print_r($openid_arr);echo "</pre>";
+        $content = "Nice 兄dei";
+        $response = $this->sendMsg($openid_arr,$content);
+        echo $response;
+    }
+    // 群发消息
+    public function sendMsg($openid_arr,$content){
+        $msg = [
+            "touser" => $openid_arr,
+            "msgtype" => "text",
+            "text" => ["content" => $content]
+        ];
+        $data =json_encode($msg,JSON_UNESCAPED_UNICODE);
+        $url = "https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=".$this->getAccessToken();
+
+        $client = new Client;
+        $response = $client->request("post",$url,['body' => $data]);
+
+        echo $response -> getBody();
+    }
 }
