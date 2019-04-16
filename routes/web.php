@@ -23,7 +23,7 @@ Route::get('/info', function () {
 Route::get('weixin/valid',"Weixin\WeixinController@valid");
 Route::post('weixin/valid',"Weixin\WeixinController@wxEvent");
 
-
+Route::get('weixin/atoken',"Weixin\WeixinController@atoken");
 Route::get('/weixin/getAccessToken',"Weixin\WeixinController@getAccessToken");
 Route::get('/weixin/send',"Weixin\WeixinController@send");
 

@@ -148,7 +148,7 @@ class WeixinController extends Controller
             "text" => ["content" => $content]
         ];
         $data =json_encode($msg,JSON_UNESCAPED_UNICODE);
-        $url = "https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=".$this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token='.$this->getAccessToken();
 
         $client = new Client;
         $response = $client->request("post",$url,['body' => $data]);
