@@ -51,7 +51,7 @@ class WeixinController extends Controller
                     'sex'=>$user['sex'],
                     'headimgurl'=>$user['headimgurl']
                 ];
-                $id = WxUserModel::insertGetId($user_Info);
+                $id = WxUserModel::insert($user_Info);
                 echo '<xml>
                 <ToUserName><![CDATA['.$openid.']]></ToUserName>
                 <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
@@ -64,7 +64,7 @@ class WeixinController extends Controller
         }elseif($msg_type=='text'){
             if(strpos($xml_obj->Content,'+天气')){
                 $city=explode('+',$xml_obj->Content)[0];
-                echo "City : ".$city;
+                // echo "City : ".$city;
                 $url = "https://free-api.heweather.net/s6/weather/now?key=HE1904161042411866&location=".$city;
                 $arr = json_decode(file_get_contents($url),true);
                 // echo '<pre>';print_r($arr);echo "</pre>";               
