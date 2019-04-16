@@ -66,33 +66,35 @@ class WeixinController extends Controller
                 </xml>';
             }
         }elseif($msg_type=='text'){
-            if(strpos($xml_obj->Content,'+天气')){
+            if(strpos($xml_obj->Content,"+天气")){
                 $city=explode('+',$xml_obj->Content)[0];
                 // echo "City : ".$city;
                 $url = "https://free-api.heweather.net/s6/weather/now?key=HE1904161042411866&location=".$city;
                 $arr = json_decode(file_get_contents($url),true);
                 // echo '<pre>';print_r($arr);echo "</pre>";               
-                $fl = $arr['HeWeather6'][0]['now']['fl'];               //摄氏度
-                $wind_dir = $arr['HeWeather6'][0]['now']['wind_dir'];   //风向
-                $wind_sc = $arr['HeWeather6'][0]['now']['wind_sc'];     //风力
-                $hum = $arr['HeWeather6'][0]['now']['hum'];             //湿度
-                $str="城市 : $city \n"."摄氏度 : $fl \n"."风向 : $wind_dir \n"."风力 : $wind_sc \n"."湿度 : $hum \n";
-
-                $response_xml='<xml>
-                <ToUserName><![CDATA['.$openid.']]></ToUserName>
-                <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
-                <CreateTime>'.time().'</CreateTime>
-                <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA['.$str.']]></Content>
-                </xml>';
-            }else{
-                $response_xml='<xml>
-                <ToUserName><![CDATA['.$openid.']]></ToUserName>
-                <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
-                <CreateTime>'.time().'</CreateTime>
-                <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA["城市名不正确"]]></Content>
-                </xml>';
+                if($arr['HeWeather6'][0]['status']=='ok'){
+                    $fl = $arr['HeWeather6'][0]['now']['fl'];               //摄氏度
+                    $wind_dir = $arr['HeWeather6'][0]['now']['wind_dir'];   //风向
+                    $wind_sc = $arr['HeWeather6'][0]['now']['wind_sc'];     //风力
+                    $hum = $arr['HeWeather6'][0]['now']['hum'];             //湿度
+                    $str="城市 : $city \n"."摄氏度 : $fl \n"."风向 : $wind_dir \n"."风力 : $wind_sc \n"."湿度 : $hum \n";
+    
+                    $response_xml='<xml>
+                    <ToUserName><![CDATA['.$openid.']]></ToUserName>
+                    <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
+                    <CreateTime>'.time().'</CreateTime>
+                    <MsgType><![CDATA[text]]></MsgType>
+                    <Content><![CDATA['.$str.']]></Content>
+                    </xml>';
+                }else{
+                    $response_xml='<xml>
+                    <ToUserName><![CDATA['.$openid.']]></ToUserName>
+                    <FromUserName><![CDATA['.$wx_id.']]></FromUserName>
+                    <CreateTime>'.time().'</CreateTime>
+                    <MsgType><![CDATA[text]]></MsgType>
+                    <Content><![CDATA["城市名不正确"]]></Content>
+                    </xml>';
+                }
             }
             return $response_xml;
         }
