@@ -1,163 +1,25 @@
 <?php
+
 namespace App\Http\Controllers\Weixin;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Redis;
-use App\Model\User\WxUserModel;
-use GuzzleHttp\Client;
-class WxController extends Controller
-{
-    //
-    /**
-     * 处理首次接入GET请求
-     */
-    public function valid()
-    {
-        echo $_GET['echostr'];
-    }
-    public function atoken()
-    {
-        echo $this->getAccessToken();
-    }
-    /**
-     * 接收微信事件推送 POST
-     */
-    public function wxEvent()
-    {
-        //接收微信服务器推送
-        $content = file_get_contents("php://input");
-        $time = date('Y-m-d H:i:s');
-        $str = $time . $content . "\n";
-        file_put_contents("logs/wx_event.log",$str,FILE_APPEND);
-        $data = simplexml_load_string($content);
-//        echo 'ToUserName: '. $data->ToUserName;echo '</br>';        // 公众号ID
-//        echo 'FromUserName: '. $data->FromUserName;echo '</br>';    // 用户OpenID
-//        echo 'CreateTime: '. $data->CreateTime;echo '</br>';        // 时间戳
-//        echo 'MsgType: '. $data->MsgType;echo '</br>';              // 消息类型
-//        echo 'Event: '. $data->Event;echo '</br>';                  // 事件类型
-//        echo 'EventKey: '. $data->EventKey;echo '</br>';
-        $wx_id = $data->ToUserName;             // 公众号ID
-        $openid = $data->FromUserName;          //用户OpenID
-        $event = $data->Event;          //事件类型
-        if($event=='subscribe'){            //扫码关注事件
-            //根据openid判断用户是否已存在
-            $local_user = WxUserModel::where(['openid'=>$openid])->first();
-            if($local_user){        //用户之前关注过
-                echo '<xml><ToUserName><![CDATA['.$openid.']]></ToUserName><FromUserName><![CDATA['.$wx_id.']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['. '欢迎回来 '. $local_user['nickname'] .']]></Content></xml>';
-            }else{          //用户首次关注
-                //获取用户信息
-                $u = $this->getUserInfo($openid);
-                //用户信息入库
-                $u_info = [
-                    'openid'    => $u['openid'],
-                    'nickname'  => $u['nickname'],
-                    'sex'  => $u['sex'],
-                    'headimgurl'  => $u['headimgurl'],
-                ];
-                $id = WxUserModel::insertGetId($u_info);
-                echo '<xml><ToUserName><![CDATA['.$openid.']]></ToUserName><FromUserName><![CDATA['.$wx_id.']]></FromUserName><CreateTime>'.time().'</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA['. '欢迎关注 '. $u['nickname'] .']]></Content></xml>';
-            }
-        }
-    }
-    /**
-     * 获取微信 AccessToken
-     */
-    public function getAccessToken()
-    {
-        //是否有缓存
-        $key = 'wx_access_token';
-        $token = Redis::get($key);
-        if($token){
-        }else{
-            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.env('WX_APPID').'&secret='.env('WX_APPSECRET');
-            $response = file_get_contents($url);
-            $arr = json_decode($response,true);
-            //缓存 access_token
-            Redis::set($key,$arr['access_token']);
-            Redis::expire($key,3600);       //缓存时间 1小时
-            $token = $arr['access_token'];
-        }
-        return $token;
-    }
-    public function test()
-    {
-        $access_token = $this->getAccessToken();
-        echo 'token : '. $access_token;echo '</br>';
-    }
-    /**
-     * 获取微信用户信息
-     * @param $openid
-     */
-    public function getUserInfo($openid)
-    {
-        $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$this->getAccessToken().'&openid='.$openid.'&lang=zh_CN';
-        $data = file_get_contents($url);
-        $u = json_decode($data,true);
-        return $u;
-    }
-    /**
-     * 创建公众号菜单
-     */
-    public function createMenu()
-    {
-        // url
-        $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token='.$this->getAccessToken();
-        // 接口数据
-        $post_arr = [               //注意菜单层级关系
-            'button'    => [
-                [
-                    'type'  => 'click',
-                    'name'  => '1809A',
-                    'key'   => 'key_menu_001'
-                ],
-                [
-                    'type'  => 'click',
-                    'name'  => '我爱北京天安门3',
-                    'key'   => 'key_menu_002'
-                ],
-            ]
-        ];
-        $json_str = json_encode($post_arr,JSON_UNESCAPED_UNICODE);  //处理中文编码
-        // 发送请求
-        $clinet = new Client();
-        $response = $clinet->request('POST',$url,[      //发送 json字符串
-            'body'  => $json_str
-        ]);
-        //处理响应
-        $res_str = $response->getBody();
-        $arr = json_decode($res_str,true);
-        //判断错误信息
-        if($arr['errcode']>0){
-            //TODO 错误处理
-            echo "创建菜单失败";
-        }else{
-            // TODO 正常逻辑
-            echo "创建菜单成功";
-        }
-    }
-}
 
-
-
-// <?php
-namespace App\Http\Controllers\Weixin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Weixin\WXBizDataCryptController;
 use Illuminate\Support\Str;
-class WxPayController extends Controller
+class WeixinPayController extends Controller
 {
-    public $weixin_unifiedorder_url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';        // 统一下单接口
-    public $notify_url = 'http://1809abc.comcto.com/weixin/pay/notify';     // 支付回调
+    public $weixin_unifiedorder_url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';   //统一下单地址
+    public $notify_url = 'http://1809zhoubinbin.comcto.com/weixin/pay/notify';  //支付回调
     /**
      * 微信支付测试
      */
-    public function test()
+    public function payTest()
     {
-        //
+        //组合统一下单参数
         $total_fee = 1;         //用户要支付的总金额
        // $order_id = OrderModel::generateOrderSN();
-        $order_id = time().mt_rand(11111,99999);            //测试订单号 随机生成
+        $str = 'longbin';
+        $order_id = $str.time().mt_rand(11111,99999);            //随机生成测试订单号
         $order_info = [
             'appid'         =>  env('WEIXIN_APPID_0'),      //微信支付绑定的服务号的APPID
             'mch_id'        =>  env('WEIXIN_MCH_ID'),       // 商户ID
@@ -176,7 +38,7 @@ class WxPayController extends Controller
         $xml = $this->ToXml();      //将数组转换为XML
         $rs = $this->postXmlCurl($xml, $this->weixin_unifiedorder_url, $useCert = false, $second = 30);
         $data =  simplexml_load_string($rs);
-//        //var_dump($data);echo '<hr>';
+    //    var_dump($data);echo '<hr>';die;
 //        echo 'return_code: '.$data->return_code;echo '<br>';
 //		echo 'return_msg: '.$data->return_msg;echo '<br>';
 //		echo 'appid: '.$data->appid;echo '<br>';
@@ -186,7 +48,7 @@ class WxPayController extends Controller
 //		echo 'result_code: '.$data->result_code;echo '<br>';
 //		echo 'prepay_id: '.$data->prepay_id;echo '<br>';
 //		echo 'trade_type: '.$data->trade_type;echo '<br>';
-//        echo 'code_url: '.$data->code_url;echo '<br>';
+    //    echo 'code_url: '.$data->code_url;echo '<br>';
 //        die;
         //echo '<pre>';print_r($data);echo '</pre>';
         //将 code_url 返回给前端，前端生成 支付二维码
@@ -286,7 +148,7 @@ class WxPayController extends Controller
     /**
      * 微信支付回调
      */
-    public function notify()
+    public function payNotify()
     {
         $data = file_get_contents("php://input");
         //记录日志
