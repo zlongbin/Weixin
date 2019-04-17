@@ -128,7 +128,33 @@ class WeixinController extends Controller
     // 创建自定义菜单
     public function createMenu(){
         $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$this->getAccessToken();
-
+        // 接口数据
+        $post_arr = [
+            'button'    => [
+                [
+                    'type'  => 'click',
+                    'name'  => 'Good',
+                    'key'   => 'key_menu_001'
+                ],
+                [
+                    'type'  => 'click',
+                    'name'  => 'Nice',
+                    'key'   => 'key_menu_002'
+                ],
+            ]
+        ];
+        $json_str = json_encode($psot_arr,JSON_UNESCAPEN_UNICODE);      //处理中文编码
+        $client = new Client;
+        $response = $client->request('post',$url,['body' => $json_str]);
+        $res_str = $response->getBody();
+        $arr = json_decode($res_str,true);
+        if($arr['errcode']>0){
+            //TODO 错误处理
+            echo "创建菜单失败";
+        }else{
+            // TODO 正常逻辑
+            echo "创建菜单成功";
+        }
     }
     // 群发消息
     public function send(){
@@ -148,11 +174,11 @@ class WeixinController extends Controller
             "msgtype" => "text",
             "text" => ["content" => $content]
         ];
-        $data =json_encode($msg,JSON_UNESCAPED_UNICODE);
+        $json_str =json_encode($msg,JSON_UNESCAPED_UNICODE);
         $url = 'https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token='.$this->getAccessToken();
 
         $client = new Client;
-        $response = $client->request("post",$url,['body' => $data]);
+        $response = $client->request("post",$url,['body' => $json_str]);
 
         return  $response -> getBody();
     }
