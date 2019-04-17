@@ -143,11 +143,12 @@ class WeixinController extends Controller
                 ],
             ]
         ];
-        $json_str = json_encode($psot_arr,JSON_UNESCAPEN_UNICODE);      //处理中文编码
+        $json_str = json_encode($post_arr,JSON_UNESCAPEN_UNICODE);      //处理中文编码
         $client = new Client;
         $response = $client->request('post',$url,['body' => $json_str]);
         $res_str = $response->getBody();
         $arr = json_decode($res_str,true);
+        echo "<pre>";print_r($arr);echo "</pre>";
         if($arr['errcode']>0){
             //TODO 错误处理
             echo "创建菜单失败";
