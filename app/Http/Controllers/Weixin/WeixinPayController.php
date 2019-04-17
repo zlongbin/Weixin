@@ -153,7 +153,7 @@ class WeixinPayController extends Controller
         $data = file_get_contents("php://input");
         //记录日志
         $log_str = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";
-        file_put_contents('logs/wx_pay_notice.log',$log_str,FILE_APPEND);
+        file_put_contents('logs/wx_pay_notify.log',$log_str,FILE_APPEND);
         $xml = simplexml_load_string($data);
         if($xml->result_code=='SUCCESS' && $xml->return_code=='SUCCESS'){      //微信支付成功回调
             //验证签名
