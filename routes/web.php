@@ -30,5 +30,5 @@ Route::get('/weixin/createMenu',"Weixin\WeixinController@createMenu");
 // 群发消息
 Route::get('/weixin/send',"Weixin\WeixinController@send");
 // 微信支付
-Route::get('/weixin/payTest',"Weixin\WeixinPayController@payTest");
-Route::post('/weixin/payNotify',"Weixin\WeixinPayController@payNotify");
+Route::get('/weixin/pay/test',"Weixin\WeixinPayController@test");
+Route::post('/weixin/pay/notify',"Weixin\WeixinPayController@notify");

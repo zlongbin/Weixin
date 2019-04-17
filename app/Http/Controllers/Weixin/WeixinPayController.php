@@ -148,7 +148,7 @@ class WeixinPayController extends Controller
     /**
      * 微信支付回调
      */
-    public function payNotify()
+    public function notify()
     {
         $data = file_get_contents("php://input");
         //记录日志
