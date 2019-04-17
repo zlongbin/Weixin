@@ -143,7 +143,7 @@ class WeixinController extends Controller
                 ],
             ]
         ];
-        $json_str = json_encode($post_arr,JSON_UNESCAPEN_UNICODE);      //处理中文编码
+        $json_str = json_encode($post_arr,JSON_UNESCAPED_UNICODE);      //处理中文编码
         $client = new Client;
         $response = $client->request('post',$url,['body' => $json_str]);
         $res_str = $response->getBody();
