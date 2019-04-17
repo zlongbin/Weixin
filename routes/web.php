@@ -25,7 +25,7 @@ Route::post('weixin/valid',"Weixin\WeixinController@wxEvent");
 
 Route::get('weixin/atoken',"Weixin\WeixinController@atoken");
 Route::get('/weixin/getAccessToken',"Weixin\WeixinController@getAccessToken");
-Route::post('/weixin/createMenu',"Weixin\WeixinController@createMenu");
+Route::get('/weixin/createMenu',"Weixin\WeixinController@createMenu");
 Route::get('/weixin/send',"Weixin\WeixinController@send");
 
 
