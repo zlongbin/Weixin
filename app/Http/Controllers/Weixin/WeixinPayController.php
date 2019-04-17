@@ -13,7 +13,7 @@ class WeixinPayController extends Controller
     /**
      * 微信支付测试
      */
-    public function payTest()
+    public function test()
     {
         //组合统一下单参数
         $total_fee = 1;         //用户要支付的总金额
