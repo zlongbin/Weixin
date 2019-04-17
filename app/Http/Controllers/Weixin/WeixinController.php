@@ -136,7 +136,7 @@ class WeixinController extends Controller
         // echo "<pre>";print_r($user_Info);echo "</pre>";
         $openid_arr = array_column($user_Info,'openid');
         echo "<pre>";print_r($openid_arr);echo "</pre>";
-        $content = "Nice 兄dei";
+        $content = "Hello  1809a";
         $response = $this->sendMsg($openid_arr,$content);
         echo $response;
     }
